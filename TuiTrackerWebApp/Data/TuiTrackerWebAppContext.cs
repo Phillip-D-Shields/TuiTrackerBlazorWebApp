@@ -15,5 +15,6 @@ namespace TuiTrackerWebApp.Data
         }
 
         public DbSet<TuiTrackerCMS.Models.Business> Business { get; set; } = default!;
+        public DbSet<TuiTrackerCMS.Models.Contact> Contact { get; set; } = default!;
     }
 }

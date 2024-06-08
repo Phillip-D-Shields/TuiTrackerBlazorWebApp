@@ -1,0 +1,106 @@
+﻿@page "/Contacts/edit"
+@inject TuiTrackerWebApp.Data.TuiTrackerWebAppContext DB
+@using TuiTrackerCMS.Models
+@inject NavigationManager NavigationManager
+@using Microsoft.EntityFrameworkCore
+
+<PageTitle>Edit</PageTitle>
+
+<h1>Edit</h1>
+
+<h4>Contact</h4>
+<hr />
+@if (Contact is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-4">
+            <EditForm method="post" Model="Contact" OnValidSubmit="UpdateContact" FormName="edit" Enhance>
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <input type="hidden" name="Contact.Id" value="@Contact.Id" />
+                <div class="mb-3">
+                    <label for="firstname" class="form-label">FirstName:</label>
+                    <InputText id="firstname" @bind-Value="Contact.FirstName" class="form-control" />
+                    <ValidationMessage For="() => Contact.FirstName" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="lastname" class="form-label">LastName:</label>
+                    <InputText id="lastname" @bind-Value="Contact.LastName" class="form-control" />
+                    <ValidationMessage For="() => Contact.LastName" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email:</label>
+                    <InputText id="email" @bind-Value="Contact.Email" class="form-control" />
+                    <ValidationMessage For="() => Contact.Email" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="phone" class="form-label">Phone:</label>
+                    <InputText id="phone" @bind-Value="Contact.Phone" class="form-control" />
+                    <ValidationMessage For="() => Contact.Phone" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="notes" class="form-label">Notes:</label>
+                    <InputText id="notes" @bind-Value="Contact.Notes" class="form-control" />
+                    <ValidationMessage For="() => Contact.Notes" class="text-danger" />
+                </div>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </EditForm>
+        </div>
+    </div>
+}
+
+<div>
+    <a href="/contacts">Back to List</a>
+</div>
+
+@code {
+    [SupplyParameterFromQuery]
+    public int Id { get; set; }
+
+    [SupplyParameterFromForm]
+    public Contact? Contact { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Contact ??= await DB.Contact.FirstOrDefaultAsync(m => m.Id == Id);
+
+        if (Contact is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+
+    // To protect from overposting attacks, enable the specific properties you want to bind to.
+    // For more details, see https://aka.ms/RazorPagesCRUD.
+    public async Task UpdateContact()
+    {
+        DB.Attach(Contact!).State = EntityState.Modified;
+
+        try
+        {
+            await DB.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!ContactExists(Contact!.Id))
+            {
+                NavigationManager.NavigateTo("notfound");
+            }
+            else
+            {
+                throw;
+            }
+        }
+
+        NavigationManager.NavigateTo("/contacts");
+    }
+
+    bool ContactExists(int id)
+    {
+        return DB.Contact.Any(e => e.Id == id);
+    }
+}

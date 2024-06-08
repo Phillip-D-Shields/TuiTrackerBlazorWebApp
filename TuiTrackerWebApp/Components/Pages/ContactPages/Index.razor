@@ -1,0 +1,26 @@
+﻿@page "/contacts"
+@using Microsoft.AspNetCore.Components.QuickGrid
+@inject TuiTrackerWebApp.Data.TuiTrackerWebAppContext DB
+@using TuiTrackerCMS.Models
+
+<PageTitle>Index</PageTitle>
+
+<h1>Index</h1>
+
+<p>
+    <a href="contacts/create">Create New</a>
+</p>
+
+<QuickGrid Class="table" Items="DB.Contact">
+    <PropertyColumn Property="contact => contact.FirstName" />
+    <PropertyColumn Property="contact => contact.LastName" />
+    <PropertyColumn Property="contact => contact.Email" />
+    <PropertyColumn Property="contact => contact.Phone" />
+    <PropertyColumn Property="contact => contact.Notes" />
+
+    <TemplateColumn Context="contact">
+        <a href="@($"contacts/edit?id={contact.Id}")">Edit</a> |
+        <a href="@($"contacts/details?id={contact.Id}")">Details</a> |
+        <a href="@($"contacts/delete?id={contact.Id}")">Delete</a>
+    </TemplateColumn>
+</QuickGrid>
