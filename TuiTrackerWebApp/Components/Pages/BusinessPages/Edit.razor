@@ -1,0 +1,101 @@
+﻿@page "/Businesses/edit"
+@inject TuiTrackerWebApp.Data.TuiTrackerWebAppContext DB
+@using TuiTrackerCMS.Models
+@inject NavigationManager NavigationManager
+@using Microsoft.EntityFrameworkCore
+
+<PageTitle>Edit</PageTitle>
+
+<h1>Edit</h1>
+
+<h4>Business</h4>
+<hr />
+@if (Business is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-4">
+            <EditForm method="post" Model="Business" OnValidSubmit="UpdateBusiness" FormName="edit" Enhance>
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <input type="hidden" name="Business.Id" value="@Business.Id" />
+                <div class="mb-3">
+                    <label for="name" class="form-label">Name:</label>
+                    <InputText id="name" @bind-Value="Business.Name" class="form-control" />
+                    <ValidationMessage For="() => Business.Name" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="nzbn" class="form-label">NZBN:</label>
+                    <InputText id="nzbn" @bind-Value="Business.NZBN" class="form-control" />
+                    <ValidationMessage For="() => Business.NZBN" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="notes" class="form-label">Notes:</label>
+                    <InputText id="notes" @bind-Value="Business.Notes" class="form-control" />
+                    <ValidationMessage For="() => Business.Notes" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="issupplier" class="form-label">IsSupplier:</label>
+                    <InputCheckbox id="issupplier" @bind-Value="Business.IsSupplier" class="form-check-input" />
+                    <ValidationMessage For="() => Business.IsSupplier" class="text-danger" />
+                </div>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </EditForm>
+        </div>
+    </div>
+}
+
+<div>
+    <a href="/businesses">Back to List</a>
+</div>
+
+@code {
+    [SupplyParameterFromQuery]
+    public int Id { get; set; }
+
+    [SupplyParameterFromForm]
+    public Business? Business { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Business ??= await DB.Business.FirstOrDefaultAsync(m => m.Id == Id);
+
+        if (Business is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+
+    // To protect from overposting attacks, enable the specific properties you want to bind to.
+    // For more details, see https://aka.ms/RazorPagesCRUD.
+    public async Task UpdateBusiness()
+    {
+        DB.Attach(Business!).State = EntityState.Modified;
+
+        try
+        {
+            await DB.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!BusinessExists(Business!.Id))
+            {
+                NavigationManager.NavigateTo("notfound");
+            }
+            else
+            {
+                throw;
+            }
+        }
+
+        NavigationManager.NavigateTo("/businesses");
+    }
+
+    bool BusinessExists(int id)
+    {
+        return DB.Business.Any(e => e.Id == id);
+    }
+}

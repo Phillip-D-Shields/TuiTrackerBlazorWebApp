@@ -1,0 +1,25 @@
+﻿@page "/businesses"
+@using Microsoft.AspNetCore.Components.QuickGrid
+@inject TuiTrackerWebApp.Data.TuiTrackerWebAppContext DB
+@using TuiTrackerCMS.Models
+
+<PageTitle>Index</PageTitle>
+
+<h1>Index</h1>
+
+<p>
+    <a href="businesses/create">Create New</a>
+</p>
+
+<QuickGrid Class="table" Items="DB.Business">
+    <PropertyColumn Property="business => business.Name" />
+    <PropertyColumn Property="business => business.NZBN" />
+    <PropertyColumn Property="business => business.Notes" />
+    <PropertyColumn Property="business => business.IsSupplier" />
+
+    <TemplateColumn Context="business">
+        <a href="@($"businesses/edit?id={business.Id}")">Edit</a> |
+        <a href="@($"businesses/details?id={business.Id}")">Details</a> |
+        <a href="@($"businesses/delete?id={business.Id}")">Delete</a>
+    </TemplateColumn>
+</QuickGrid>

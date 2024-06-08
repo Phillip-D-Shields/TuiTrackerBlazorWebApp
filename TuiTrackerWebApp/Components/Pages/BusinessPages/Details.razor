@@ -1,0 +1,51 @@
+﻿@page "/businesses/details"
+@inject TuiTrackerWebApp.Data.TuiTrackerWebAppContext DB
+@using TuiTrackerCMS.Models
+@inject NavigationManager NavigationManager
+@using Microsoft.EntityFrameworkCore
+
+<PageTitle>Details</PageTitle>
+
+<h1>Details</h1>
+
+<div>
+    <h4>Business</h4>
+    <hr />
+    @if (business is null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else {
+        <dl class="row">
+            <dt class="col-sm-2">Name</dt>
+            <dd class="col-sm-10">@business.Name</dd>
+            <dt class="col-sm-2">NZBN</dt>
+            <dd class="col-sm-10">@business.NZBN</dd>
+            <dt class="col-sm-2">Notes</dt>
+            <dd class="col-sm-10">@business.Notes</dd>
+            <dt class="col-sm-2">IsSupplier</dt>
+            <dd class="col-sm-10">@business.IsSupplier</dd>
+        </dl>
+        <div>
+            <a href="@($"/businesses/edit?id={business.Id}")">Edit</a> |
+            <a href="@($"/businesses")">Back to List</a>
+        </div>
+    }
+</div>
+
+@code {
+    Business? business;
+
+    [SupplyParameterFromQuery]
+    public int Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        business = await DB.Business.FirstOrDefaultAsync(m => m.Id == Id);
+
+        if (business is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+}

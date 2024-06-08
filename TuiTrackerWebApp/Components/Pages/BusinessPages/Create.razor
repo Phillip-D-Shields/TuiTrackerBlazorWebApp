@@ -1,0 +1,58 @@
+﻿@page "/businesses/create"
+@inject TuiTrackerWebApp.Data.TuiTrackerWebAppContext DB
+@using TuiTrackerCMS.Models
+@inject NavigationManager NavigationManager
+
+<PageTitle>Create</PageTitle>
+
+<h1>Create</h1>
+
+<h4>Business</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <EditForm method="post" Model="Business" OnValidSubmit="AddBusiness" FormName="create" Enhance>
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger" />
+            <div class="mb-3">
+                <label for="name" class="form-label">Name:</label> 
+                <InputText id="name" @bind-Value="Business.Name" class="form-control" /> 
+                <ValidationMessage For="() => Business.Name" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="nzbn" class="form-label">NZBN:</label> 
+                <InputText id="nzbn" @bind-Value="Business.NZBN" class="form-control" /> 
+                <ValidationMessage For="() => Business.NZBN" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="notes" class="form-label">Notes:</label> 
+                <InputText id="notes" @bind-Value="Business.Notes" class="form-control" /> 
+                <ValidationMessage For="() => Business.Notes" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="issupplier" class="form-label">IsSupplier:</label> 
+                <InputCheckbox id="issupplier" @bind-Value="Business.IsSupplier" class="form-check-input" /> 
+                <ValidationMessage For="() => Business.IsSupplier" class="text-danger" /> 
+            </div>        
+            <button type="submit" class="btn btn-primary">Create</button>
+        </EditForm>
+    </div>
+</div>
+
+<div>
+    <a href="/businesses">Back to List</a>
+</div>
+
+@code {
+
+    [SupplyParameterFromForm]
+    public Business Business { get; set; } = new();
+
+    // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
+    public async Task AddBusiness()
+    {
+        DB.Business.Add(Business);
+        await DB.SaveChangesAsync();
+        NavigationManager.NavigateTo("/businesses");
+    }
+}
